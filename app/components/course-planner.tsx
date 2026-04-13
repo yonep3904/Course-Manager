@@ -275,7 +275,7 @@ export function CoursePlanner({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
             <p className="text-sm font-semibold tracking-[0.22em] text-slate-500 uppercase">
-              Class Manager
+              Course Manager
             </p>
             <div className="space-y-2">
               <h1
