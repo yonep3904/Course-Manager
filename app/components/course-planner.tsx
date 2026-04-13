@@ -25,6 +25,11 @@ type ProgramLink = {
   name: string;
   href: string;
   slug: string;
+  theme: {
+    accent: string;
+    subtle: string;
+    border: string;
+  };
 };
 
 type CoursePlannerProps = {
@@ -136,6 +141,7 @@ export function CoursePlanner({
   const [searchText, setSearchText] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
   const storageKey = `${STORAGE_KEY_PREFIX}:${slug}`;
+  const currentProgram = programs.find((program) => program.slug === slug);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(storageKey);
@@ -272,7 +278,12 @@ export function CoursePlanner({
               Class Manager
             </p>
             <div className="space-y-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+              <h1
+                className="border-l-4 pl-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl"
+                style={{
+                  borderColor: currentProgram?.theme.accent ?? "#0f172a",
+                }}
+              >
                 {name}
               </h1>
               <p className="max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
@@ -289,10 +300,21 @@ export function CoursePlanner({
                     key={item.slug}
                     href={item.href}
                     aria-current={isCurrent ? "page" : undefined}
+                    style={{
+                      backgroundColor: isCurrent
+                        ? item.theme.accent
+                        : item.theme.subtle,
+                      borderColor: isCurrent
+                        ? item.theme.accent
+                        : item.theme.border,
+                      boxShadow: isCurrent
+                        ? `0 10px 24px ${item.theme.border}55`
+                        : undefined,
+                    }}
                     className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
                       isCurrent
-                        ? "bg-slate-950 text-white"
-                        : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100"
+                        ? "border text-white"
+                        : "border text-slate-700"
                     }`}
                   >
                     {item.name}

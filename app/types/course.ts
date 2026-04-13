@@ -16,4 +16,9 @@ export type Program = {
   courses: Course[];
   href: string;
   slug: string;
+  theme: {
+    accent: string;
+    subtle: string;
+    border: string;
+  };
 };

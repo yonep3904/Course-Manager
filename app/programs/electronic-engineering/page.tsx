@@ -14,6 +14,7 @@ export default function Page() {
         name: p.shortName,
         href: p.href,
         slug: p.slug,
+        theme: p.theme,
       }))}
     />
   );

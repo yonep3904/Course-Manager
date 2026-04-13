@@ -19,6 +19,11 @@ export const programs: Record<ProgramKey, Program> = {
     courses: electricalEngineeringCourses,
     href: "/programs/electrical-engineering",
     slug: "electrical-engineering",
+    theme: {
+      accent: "#db2777",
+      subtle: "#fdf2f8",
+      border: "#f9a8d4",
+    },
   },
   "electronic-engineering-2024": {
     name: "情報電気工学科 電子工学教育プログラム(2024年度)",
@@ -29,6 +34,11 @@ export const programs: Record<ProgramKey, Program> = {
     courses: electronicEngineeringCourses,
     href: "/programs/electronic-engineering",
     slug: "electronic-engineering-2024",
+    theme: {
+      accent: "#4d7c0f",
+      subtle: "#f7fee7",
+      border: "#bef264",
+    },
   },
   "information-engineering-2024": {
     name: "情報電気工学科 情報工学教育プログラム(2024年度)",
@@ -39,5 +49,10 @@ export const programs: Record<ProgramKey, Program> = {
     courses: informationEngineeringCourses,
     href: "/programs/information-engineering",
     slug: "information-engineering-2024",
+    theme: {
+      accent: "#0284c7",
+      subtle: "#f0f9ff",
+      border: "#7dd3fc",
+    },
   },
 };
