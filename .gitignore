@@ -34,8 +34,9 @@ yarn-error.log*
 .env*
 
 # private local course data
-科目一覧.csv
-app/data/courses.ts
+courses/
+courses.csv
+courses.ts
 
 # vercel
 .vercel
@@ -43,3 +44,10 @@ app/data/courses.ts
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python
+__pycache__/
+*.pyc
+
+# codex
+.codex

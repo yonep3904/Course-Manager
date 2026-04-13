@@ -1,18 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  COURSES,
-  type Course,
-  type RequirementSymbol,
-} from "@/app/data/courses";
+import type { Course, RequirementSymbol } from "@/app/types/course";
 
 type RequirementKey =
   | "required"
   | "programRequired"
   | "electiveRequired"
   | "freeElective"
-  | "other";
+  | "programExternal";
 
 type Totals = Record<RequirementKey, number>;
 
@@ -25,7 +21,22 @@ type Filters = {
   hideOther: boolean;
 };
 
-const STORAGE_KEY = "course-planner-state";
+type ProgramLink = {
+  name: string;
+  href: string;
+  slug: string;
+};
+
+type CoursePlannerProps = {
+  name: string;
+  description: string;
+  courses: Course[];
+  slug: string;
+
+  programs: ProgramLink[];
+};
+
+const STORAGE_KEY_PREFIX = "course-planner-state";
 
 const REQUIREMENT_META: Record<
   RequirementKey,
@@ -60,8 +71,8 @@ const REQUIREMENT_META: Record<
     lightClass: "bg-sky-100 text-sky-950",
     strongClass: "bg-sky-300 text-sky-950",
   },
-  other: {
-    label: "未分類",
+  programExternal: {
+    label: "プログラム外科目",
     symbol: "-",
     lightClass: "bg-slate-100 text-slate-900",
     strongClass: "bg-slate-300 text-slate-950",
@@ -73,7 +84,7 @@ const EMPTY_TOTALS: Totals = {
   programRequired: 0,
   electiveRequired: 0,
   freeElective: 0,
-  other: 0,
+  programExternal: 0,
 };
 
 const DEFAULT_FILTERS: Filters = {
@@ -96,7 +107,7 @@ function getRequirementKey(symbol: RequirementSymbol): RequirementKey {
     case "":
       return "freeElective";
     default:
-      return "other";
+      return "programExternal";
   }
 }
 
@@ -112,15 +123,22 @@ function formatRequirement(symbol: RequirementSymbol) {
   return symbol ? `${symbol} ${meta.label}` : meta.label;
 }
 
-export default function CoursePlanner() {
+export function CoursePlanner({
+  name,
+  description,
+  slug,
+  programs,
+  courses,
+}: CoursePlannerProps) {
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [plannedIds, setPlannedIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [searchText, setSearchText] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
+  const storageKey = `${STORAGE_KEY_PREFIX}:${slug}`;
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const stored = window.localStorage.getItem(storageKey);
     if (!stored) {
       setHasLoaded(true);
       return;
@@ -143,11 +161,11 @@ export default function CoursePlanner() {
         typeof parsed.searchText === "string" ? parsed.searchText : "",
       );
     } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(storageKey);
     } finally {
       setHasLoaded(true);
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     if (!hasLoaded) {
@@ -155,10 +173,10 @@ export default function CoursePlanner() {
     }
 
     window.localStorage.setItem(
-      STORAGE_KEY,
+      storageKey,
       JSON.stringify({ completedIds, plannedIds, filters, searchText }),
     );
-  }, [completedIds, plannedIds, filters, searchText, hasLoaded]);
+  }, [completedIds, plannedIds, filters, searchText, hasLoaded, storageKey]);
 
   const completedSet = new Set(completedIds);
   const plannedSet = new Set(plannedIds);
@@ -167,7 +185,7 @@ export default function CoursePlanner() {
   const futureTotals: Totals = { ...EMPTY_TOTALS };
   const addedTotals: Totals = { ...EMPTY_TOTALS };
 
-  for (const course of COURSES) {
+  for (const course of courses) {
     const isCompleted = completedSet.has(course.id);
     const isPlanned = plannedSet.has(course.id);
 
@@ -183,7 +201,7 @@ export default function CoursePlanner() {
     }
   }
 
-  const visibleCourses = COURSES.filter((course) => {
+  const visibleCourses = courses.filter((course) => {
     const isCompleted = completedSet.has(course.id);
     const key = getRequirementKey(course.requirement);
     const normalizedSearch = searchText.trim().toLowerCase();
@@ -208,7 +226,7 @@ export default function CoursePlanner() {
       return false;
     }
 
-    if (filters.hideOther && key === "other") {
+    if (filters.hideOther && key === "programExternal") {
       return false;
     }
 
@@ -255,14 +273,33 @@ export default function CoursePlanner() {
             </p>
             <div className="space-y-2">
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                履修登録の単位管理
+                {name}
               </h1>
               <p className="max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
-                CSV
-                の科目一覧をもとに、履修済みと履修登録予定を分けて管理します。
+                {description}
                 集計は区分ごとに表示し、状態はブラウザのローカルストレージに保存します。
               </p>
             </div>
+            <nav aria-label="プログラム選択" className="flex flex-wrap gap-2">
+              {programs.map((item) => {
+                const isCurrent = item.slug === slug;
+
+                return (
+                  <a
+                    key={item.slug}
+                    href={item.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                      isCurrent
+                        ? "bg-slate-950 text-white"
+                        : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    {item.name}
+                  </a>
+                );
+              })}
+            </nav>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="rounded-2xl bg-slate-900 px-4 py-3 text-slate-50">

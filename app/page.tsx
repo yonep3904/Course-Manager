@@ -1,5 +1,5 @@
-import CoursePlanner from "@/app/components/course-planner";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <CoursePlanner />;
+  redirect("/programs/information-engineering");
 }
