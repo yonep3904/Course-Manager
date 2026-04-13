@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "履修登録ツール",
-  description: "大学の履修登録に向けて科目と単位数を整理するローカルツール",
+  title: "履修管理アプリ",
+  description: "大学の履修登録に向けて科目と単位数を整理するためのアプリケーション",
 };
 
 export default function RootLayout({
